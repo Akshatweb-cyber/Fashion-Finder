@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Finder AI</title>
+    <style>
+        /* Modern Neon Theme & Reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { 
+            background: linear-gradient(135deg, #0f0c20 0%, #15102a 100%); 
+            color: #ffffff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px;
+        }
+
+        /* Main Container Card with smooth pop-in animation */
+        .container { 
+            max-width: 420px; 
+            width: 100%; 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            padding: 35px 25px; 
+            border-radius: 24px; 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Heading Style with Gradient Color */
+        h2 { 
+            font-size: 28px; 
+            font-weight: 700; 
+            background: linear-gradient(45deg, #ff2459, #ff7b00); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 8px; 
+        }
+        
+        p { color: #b3b0cb; font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
+
+        /* Custom Drag & Drop / Upload Box Design */
+        .upload-box {
+            border: 2px dashed rgba(255, 36, 89, 0.4);
+            padding: 30px 20px;
+            border-radius: 16px;
+            background: rgba(255, 36, 89, 0.02);
+            cursor: pointer;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        .upload-box:hover {
+            border-color: #ff2459;
+            background: rgba(255, 36, 89, 0.05);
+            transform: scale(1.02);
+        }
+        .upload-box icon { font-size: 40px; display: block; margin-bottom: 10px; }
+        .upload-text { color: #e1def6; font-size: 14px; font-weight: 500; }
+        
+        /* Hidden Actual File Input */
+        #imageUpload { display: none; }
+
+        /* Image Preview Box */
+        #previewContainer {
+            display: none;
+            margin-bottom: 20px;
+            animation: scaleIn 0.3s ease;
+        }
+        #imagePreview {
+            max-width: 120px;
+            border-radius: 12px;
+            border: 2px solid #ff2459;
+            box-shadow: 0 0 15px rgba(255, 36, 89, 0.3);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Futuristic Glowing Neon Button */
+        .search-btn { 
+            background: linear-gradient(45deg, #ff2459, #ff5e3a); 
+            color: white; 
+            border: none; 
+            padding: 15px 25px; 
+            border-radius: 14px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: 600; 
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 36, 89, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .search-btn:hover { 
+            box-shadow: 0 6px 20px rgba(255, 36, 89, 0.5);
+            transform: translateY(-2px);
+        }
+        .search-btn:active { transform: translateY(0); }
+
+        /* Glowing Pulse Animation for Loading */
+        #status { 
+            margin-top: 25px; 
+            font-size: 15px; 
+            font-weight: 500; 
+            color: #ff7b00;
+        }
+        .pulse {
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            from { opacity: 0.6; text-shadow: 0 0 5px rgba(255,123,0,0.5); }
+            to { opacity: 1; text-shadow: 0 0 15px rgba(255,123,0,0.9); }
+        }
+
+        /* Results Design Styling */
+        .results { margin-top: 25px; text-align: left; max-height: 250px; overflow-y: auto; padding-right: 5px; }
+        .item { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            padding: 12px; 
+            border-radius: 12px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: center; 
+            animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .item img { width: 55px; height: 55px; border-radius: 8px; margin-right: 15px; object-fit: cover; background: #221d38; }
+        .item-info { flex-grow: 1; }
+        .item-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .item a { 
+            color: #00ffcc; 
+            text-decoration: none; 
+            font-size: 12px; 
+            font-weight: bold; 
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+        .item a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Fashion Finder AI</h2>
+        <p>Kisi bhi kapde ka screenshot upload karo, hum dhoondenge Amazon, Myntra aur Ajio par!</p>
+        
+        <div class="upload-box" onclick="document.getElementById('imageUpload').click()">
+            <span style="font-size: 40px; display: block; margin-bottom: 5px;">📷</span>
+            <span class="upload-text">Tap to upload Screenshot</span>
+        </div>
+        <input type="file" id="imageUpload" accept="image/*" onchange="showPreview(this)">
+
+        <div id="previewContainer">
+            <img id="imagePreview" src="" alt="Preview">
+        </div>
+
+        <button class="search-btn" onclick="startSearch()">Find Matching Clothes</button>
+        <div id="status"></div>
+        <div id="resultsList" class="results"></div>
+    </div>
+
+    <script>
+        // Photo upload karne par preview dikhane ke liye function
+        function showPreview(input) {
+            const previewContainer = document.getElementById('previewContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function startSearch() {
+            const fileInput = document.getElementById('imageUpload');
+            const status = document.getElementById('status');
+            const resultsList = document.getElementById('resultsList');
+            
+            if(fileInput.files.length === 0) {
+                status.innerText = "❌ Please select an image first!";
+                status.style.color = "#ff2459";
+                status.className = "";
+                return;
+            }
+
+            status.style.color = "#ff7b00";
+            status.className = "pulse"; // Animation shuru
+            status.innerHTML = "🤖 AI is analyzing image and searching shops...";
+            resultsList.innerHTML = "";
+
+            // Photo processing aur backend connection baad me active hoga
+        }
+    </script>
+</body>
+</html>
