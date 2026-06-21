@@ -1,4 +1,4 @@
-           <!DOCTYPE html>
+     <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -192,7 +192,7 @@
     <script>
         let compressedImageBase64 = "";
         
-        // Asli token bina kisi mistake ke yahan daal diya hai:
+        // Token aur Model dono sahi kar diye hain:
         const APIFY_TOKEN = "Apify_api_UTe2M3cb2vuTnblHxO3SQg8yvaRn0T0dW9Rv"; 
 
         function previewImage(event) {
@@ -251,7 +251,8 @@
             status.innerHTML = "🔍 AI is searching products directly via Apify...";
 
             try {
-                const response = await fetch(`https://api.apify.com/v2/acts/apify~google-lens/run-sync?token=${APIFY_TOKEN}`, {
+                // Endpoint ko badal kar borderline~google-lens kiya hai jo aapke dashboard par hai
+                const response = await fetch(`https://api.apify.com/v2/acts/borderline~google-lens/run-sync?token=${APIFY_TOKEN}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -266,9 +267,18 @@
                 }
                 
                 const data = await response.json();
-                const shoppingResults = data?.output?.body?.shopping_results || data?.output?.data?.shopping_results || [];
                 
-                if (shoppingResults.length > 0) {
+                // Dono tarike se data read karne ki koshish karna
+                let shoppingResults = [];
+                if (data?.output?.body?.shopping_results) {
+                    shoppingResults = data.output.body.shopping_results;
+                } else if (data?.output?.data?.shopping_results) {
+                    shoppingResults = data.output.data.shopping_results;
+                } else if (data?.shopping_results) {
+                    shoppingResults = data.shopping_results;
+                }
+                
+                if (shoppingResults && shoppingResults.length > 0) {
                     status.innerHTML = "✅ Found matches for you!";
                     shoppingResults.forEach(product => {
                         const title = product.title || "Fashion Item";
@@ -300,4 +310,4 @@
     </script>
 </body>
 </html>
- 
+                          
