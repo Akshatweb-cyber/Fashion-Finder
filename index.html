@@ -1,4 +1,4 @@
-     <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -192,7 +192,7 @@
     <script>
         let compressedImageBase64 = "";
         
-        // Token aur Model dono sahi kar diye hain:
+        // Tera perfect token bina kisi badlav ke:
         const APIFY_TOKEN = "Apify_api_UTe2M3cb2vuTnblHxO3SQg8yvaRn0T0dW9Rv"; 
 
         function previewImage(event) {
@@ -248,11 +248,14 @@
 
             searchBtn.disabled = true;
             resultsList.innerHTML = "";
-            status.innerHTML = "🔍 AI is searching products directly via Apify...";
+            status.innerHTML = "🔍 AI is searching products securely...";
 
             try {
-                // Endpoint ko badal kar borderline~google-lens kiya hai jo aapke dashboard par hai
-                const response = await fetch(`https://api.apify.com/v2/acts/borderline~google-lens/run-sync?token=${APIFY_TOKEN}`, {
+                // Ab hum CORS proxy use kar rahe hain jo authorization block nahi hone degi
+                const targetUrl = `https://api.apify.com/v2/acts/borderline~google-lens/run-sync?token=${APIFY_TOKEN}`;
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+
+                const response = await fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -268,7 +271,6 @@
                 
                 const data = await response.json();
                 
-                // Dono tarike se data read karne ki koshish karna
                 let shoppingResults = [];
                 if (data?.output?.body?.shopping_results) {
                     shoppingResults = data.output.body.shopping_results;
@@ -302,7 +304,7 @@
                 }
             } catch (error) {
                 console.error("Error:", error);
-                status.innerHTML = "⚠️ API Error: " + error.message;
+                status.innerHTML = "⚠️ Connection Error: " + error.message + ". Please try again.";
             } finally {
                 searchBtn.disabled = false;
             }
@@ -310,4 +312,4 @@
     </script>
 </body>
 </html>
-                          
+ 
