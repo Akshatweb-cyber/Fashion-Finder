@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -191,7 +191,7 @@
 
     <script>
         let compressedImageBase64 = "";
-        const APIFY_TOKEN = "Apify_api_UTe2M3cb2vuTnblHxO3SQg8yvaRn0T0dW9Rv"; // Perfect Token
+        const APIFY_TOKEN = "Apify_api_UTe2M3cb2vuTnblHxO3SQg8yvaRn0T0dW9Rv"; // Tera sahi token
 
         function previewImage(event) {
             const fileInput = event.target;
@@ -212,7 +212,8 @@
                     img.src = e.target.result;
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 350; // Super optimized compression taaki error na aaye
+                        // Image ka size chota rakha h taaki proxy se fast load ho jaye
+                        const MAX_WIDTH = 300; 
                         let width = img.width;
                         let height = img.height;
 
@@ -249,15 +250,14 @@
             status.innerHTML = "🔍 AI is connecting securely and searching products...";
 
             try {
-                // Heroku CORS proxy jo 401 aur CORS errors ko 100% bypass karegi
+                // AllOrigins proxy jo token authorization aur data ko cleanly allow karegi
                 const targetUrl = `https://api.apify.com/v2/acts/apify~google-lens-scraper/run-sync?token=${APIFY_TOKEN}`;
-                const proxyUrl = `https://cors-anywhere.herokuapp.com/${targetUrl}`;
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
 
                 const response = await fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         "rawImageData": compressedImageBase64,
@@ -267,12 +267,12 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`Apify Server Status ${response.status}`);
+                    throw new Error(`Server Status ${response.status}`);
                 }
                 
                 const data = await response.json();
                 
-                // Saare expected JSON outputs ko parse karne ke liye check
+                // Sabhi nested data arrays ko handle karne ke liye clean extraction
                 let shoppingResults = data?.shopping_results || 
                                       data?.output?.body?.shopping_results || 
                                       data?.output?.data?.shopping_results || 
@@ -298,11 +298,11 @@
                         `;
                     });
                 } else {
-                    status.innerHTML = "❌ No matching clothes found in the database. Try another clear image!";
+                    status.innerHTML = "❌ No matching clothes found. Try another photo!";
                 }
             } catch (error) {
                 console.error("Error:", error);
-                status.innerHTML = "⚠️ Setup Status: " + error.message + ". Please ensure you activated Step 1 link.";
+                status.innerHTML = "⚠️ Error: " + error.message + ". Please refresh and try again.";
             } finally {
                 searchBtn.disabled = false;
             }
@@ -310,4 +310,4 @@
     </script>
 </body>
 </html>
-                
+                                       
