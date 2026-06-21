@@ -5,118 +5,256 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fashion Finder AI</title>
     <style>
-        /* Modern Neon Theme & Reset */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { 
-            background: linear-gradient(135deg, #0f0c20 0%, #15102a 100%); 
-            color: #ffffff; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
         }
-
-        /* Main Container Card with smooth pop-in animation */
-        .container { 
-            max-width: 420px; 
-            width: 100%; 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px);
-            padding: 35px 25px; 
-            border-radius: 24px; 
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
-            animation: fadeIn 0.8s ease-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-top: 40px;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-
-        /* Heading Style with Gradient Color */
-        h2 { 
-            font-size: 28px; 
-            font-weight: 700; 
-            background: linear-gradient(45deg, #ff2459, #ff7b00); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            margin-bottom: 8px; 
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
         }
-        
-        p { color: #b3b0cb; font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
-
-        /* Custom Drag & Drop / Upload Box Design */
         .upload-box {
-            border: 2px dashed rgba(255, 36, 89, 0.4);
+            border: 2px dashed #475569;
+            border-radius: 15px;
             padding: 30px 20px;
-            border-radius: 16px;
-            background: rgba(255, 36, 89, 0.02);
             cursor: pointer;
-            margin-bottom: 25px;
             transition: all 0.3s ease;
+            background: rgba(0,0,0,0.2);
+            margin-bottom: 20px;
         }
         .upload-box:hover {
-            border-color: #ff2459;
-            background: rgba(255, 36, 89, 0.05);
-            transform: scale(1.02);
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.05);
         }
-        .upload-box icon { font-size: 40px; display: block; margin-bottom: 10px; }
-        .upload-text { color: #e1def6; font-size: 14px; font-weight: 500; }
-        
-        /* Hidden Actual File Input */
-        #imageUpload { display: none; }
-
-        /* Image Preview Box */
-        #previewContainer {
+        #fileInput {
             display: none;
-            margin-bottom: 20px;
-            animation: scaleIn 0.3s ease;
         }
-        #imagePreview {
-            max-width: 120px;
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            display: none;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .btn {
+            background: linear-gradient(to right, #2563eb, #4f46e5);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
             border-radius: 12px;
-            border: 2px solid #ff2459;
-            box-shadow: 0 0 15px rgba(255, 36, 89, 0.3);
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
         }
-
-        @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
         }
-
-        /* Futuristic Glowing Neon Button */
-        .search-btn { 
-            background: linear-gradient(45deg, #ff2459, #ff5e3a); 
-            color: white; 
-            border: none; 
-            padding: 15px 25px; 
-            border-radius: 14px; 
-            font-size: 16px; 
-            cursor: pointer; 
-            width: 100%; 
-            font-weight: 600; 
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(255, 36, 89, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
+        .btn:disabled {
+            background: #334155;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+        .results {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+            width: 100%;
+        }
+        .item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+        .item:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .item img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            background: #1e293b;
+        }
+        .item-info {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+        .item-title {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .search-btn:hover { 
-            box-shadow: 0 6px 20px rgba(255, 36, 89, 0.5);
-            transform: translateY(-2px);
+        .item-price {
+            font-size: 0.9rem;
+            color: #34d399;
+            font-weight: bold;
+            margin-bottom: 8px;
         }
-        .search-btn:active { transform: translateY(0); }
-
-        /* Glowing Pulse Animation for Loading */
-        #status { 
-            margin-top: 25px; 
-            font-size: 15px; 
-            font-weight: 500; 
-            color: #ff7b00;
+        .item a {
+            display: block;
+            text-align: center;
+            background: #1e293b;
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            transition: all 0.2s;
         }
-        .pulse {
-            animation: pulseGlow 
+        .item a:hover {
+            background: #38bdf8;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fashion Finder AI</h1>
+        <p class="subtitle">Upload any clothes image to find direct shopping links</p>
+        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📸</div>
+            <p id="uploadText">Tap to upload clothes image</p>
+            <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
+            <img id="preview" alt="Preview">
+        </div>
+        <button class="btn" id="searchBtn" onclick="startSearch()" disabled>Find Matching Clothes</button>
+        <div id="status"></div>
+        <div class="results" id="resultsList"></div>
+    </div>
+    <script>
+        function previewImage(event) {
+            const fileInput = event.target;
+            const preview = document.getElementById('preview');
+            const uploadText = document.getElementById('uploadText');
+            const searchBtn = document.getElementById('searchBtn');
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'inline-block';
+                    uploadText.style.display = 'none';
+                    searchBtn.disabled = false;
+                }
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+        async function startSearch() {
+            const fileInput = document.getElementById('fileInput');
+            const status = document.getElementById('status');
+            const resultsList = document.getElementById('resultsList');
+            const searchBtn = document.getElementById('searchBtn');
+            if (!fileInput.files || !fileInput.files[0]) return;
+            searchBtn.disabled = true;
+            resultsList.innerHTML = "";
+            status.innerHTML = "🔄 Converting image for AI...";
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = async () => {
+                try {
+                    status.innerHTML = "🔍 Searching clothes on Amazon/Myntra...";
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: reader.result })
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ error: "Server Error" }));
+                        throw new Error(errorData.error || `Server Status ${response.status}`);
+                    }
+                    const data = await response.json();
+                    if (data.results && data.results.length > 0) {
+                        status.innerHTML = "✅ Found matches for you!";
+                        data.results.forEach(product => {
+                            const title = product.title || "Fashion Item";
+                            const link = product.link || "#";
+                            const thumbnail = product.thumbnail || "https://via.placeholder.com/150";
+                            const price = product.price ? product.price : "Check Price";
+                            resultsList.innerHTML += `
+                                <div class="item">
+                                    <img src="${thumbnail}" alt="product">
+                                    <div class="item-info">
+                                        <div class="item-title">${title}</div>
+                                        <div class="item-price">${price}</div>
+                                        <a href="${link}" target="_blank">Buy Now</a>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        status.innerHTML = "❌ No matching items found. Try another photo!";
+                    }
+                } catch (error) {
+                    console.error("Error details:", error);
+                    status.innerHTML = "⚠️ Error: " + error.message;
+                } finally {
+                    searchBtn.disabled = false;
+                }
+            };
+        }
+    </script>
+</body>
+</html>
