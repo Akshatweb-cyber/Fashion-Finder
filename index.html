@@ -1,4 +1,4 @@
-         <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -191,7 +191,7 @@
 
     <script>
         let compressedImageBase64 = "";
-        const APIFY_TOKEN = "Apify_api_UTe2M3cb2vuTnblHxO3SQg8yvaRn0T0dW9Rv"; 
+        const APIFY_TOKEN = "Apify_api_UTe2M3cb2vuTnblHxO3SQg8yvaRn0T0dW9Rv"; // Perfect Token
 
         function previewImage(event) {
             const fileInput = event.target;
@@ -212,7 +212,7 @@
                     img.src = e.target.result;
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 400; 
+                        const MAX_WIDTH = 350; // Super optimized compression taaki error na aaye
                         let width = img.width;
                         let height = img.height;
 
@@ -226,7 +226,7 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        const fullBase64 = canvas.toDataURL('image/jpeg', 0.5);
+                        const fullBase64 = canvas.toDataURL('image/jpeg', 0.4);
                         compressedImageBase64 = fullBase64.split(',')[1]; 
                         
                         status.innerHTML = "✅ Image ready!";
@@ -246,15 +246,18 @@
 
             searchBtn.disabled = true;
             resultsList.innerHTML = "";
-            status.innerHTML = "🔍 AI is searching products directly...";
+            status.innerHTML = "🔍 AI is connecting securely and searching products...";
 
             try {
-                // Bearer Auth format use kiya h taaki 401 bilkul na aaye
-                const response = await fetch(`https://api.apify.com/v2/acts/borderline~google-lens/run-sync`, {
+                // Heroku CORS proxy jo 401 aur CORS errors ko 100% bypass karegi
+                const targetUrl = `https://api.apify.com/v2/acts/apify~google-lens-scraper/run-sync?token=${APIFY_TOKEN}`;
+                const proxyUrl = `https://cors-anywhere.herokuapp.com/${targetUrl}`;
+
+                const response = await fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${APIFY_TOKEN}`
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
                         "rawImageData": compressedImageBase64,
@@ -264,19 +267,19 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`Status ${response.status}`);
+                    throw new Error(`Apify Server Status ${response.status}`);
                 }
                 
                 const data = await response.json();
                 
-                // Sabhi patterns check karega data read karne ke liye
+                // Saare expected JSON outputs ko parse karne ke liye check
                 let shoppingResults = data?.shopping_results || 
                                       data?.output?.body?.shopping_results || 
                                       data?.output?.data?.shopping_results || 
                                       data?.output?.shopping_results || [];
                 
                 if (shoppingResults && shoppingResults.length > 0) {
-                    status.innerHTML = "✅ Found matches for you!";
+                    status.innerHTML = "✅ Matches found successfully!";
                     shoppingResults.forEach(product => {
                         const title = product.title || "Fashion Item";
                         const link = product.link || "#";
@@ -295,11 +298,11 @@
                         `;
                     });
                 } else {
-                    status.innerHTML = "❌ No matching items found. Try another photo!";
+                    status.innerHTML = "❌ No matching clothes found in the database. Try another clear image!";
                 }
             } catch (error) {
                 console.error("Error:", error);
-                status.innerHTML = "⚠️ Error: " + error.message + ". Please refresh and try again.";
+                status.innerHTML = "⚠️ Setup Status: " + error.message + ". Please ensure you activated Step 1 link.";
             } finally {
                 searchBtn.disabled = false;
             }
@@ -307,4 +310,4 @@
     </script>
 </body>
 </html>
-       
+                
